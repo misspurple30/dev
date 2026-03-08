@@ -1,69 +1,68 @@
 'use client';
+
 import { useRouter, useSearchParams } from 'next/navigation';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface PaginationProps {
   currentPage: number;
   totalPages: number;
-  basePath?: string;
 }
 
-export default function Pagination({ currentPage, totalPages, basePath = "/movies" }: PaginationProps) {
+export default function Pagination({ currentPage, totalPages }: PaginationProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const handlePageChange = (page: number) => {
+  if (totalPages <= 1) return null;
+
+  const goTo = (page: number) => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set('page', page.toString());
-    router.push(`${basePath}?${params.toString()}`);
+    params.set('page', String(page));
+    router.push(`?${params.toString()}`);
   };
 
-  if (totalPages <= 1) {
-    return null;
+  const pages = [];
+  for (let i = 1; i <= totalPages; i++) {
+    if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+      pages.push(i);
+    }
   }
 
   return (
-    <div className="flex justify-center gap-2 mt-6">
+    <div className="flex items-center justify-center gap-2 mt-8">
       <button
-        onClick={() => handlePageChange(currentPage - 1)}
+        onClick={() => goTo(currentPage - 1)}
         disabled={currentPage === 1}
-        className="px-4 py-2 border rounded-md hover:bg-gray-50 disabled:opacity-50"
+        className="flex items-center gap-1 px-3 py-2 bg-[#181818] border border-[#333] text-gray-400 hover:text-white hover:border-[#E50914] rounded transition disabled:opacity-30 disabled:cursor-not-allowed text-sm"
       >
-        Précédent
+        <ChevronLeft className="w-4 h-4" />
       </button>
-      
-      {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-        let pageNumber;
-        if (totalPages <= 5) {
-          pageNumber = i + 1;
-        } else if (currentPage <= 3) {
-          pageNumber = i + 1;
-        } else if (currentPage >= totalPages - 2) {
-          pageNumber = totalPages - 4 + i;
-        } else {
-          pageNumber = currentPage - 2 + i;
-        }
 
+      {pages.map((page, i) => {
+        const prev = pages[i - 1];
+        const showEllipsis = prev && page - prev > 1;
         return (
-          <button
-            key={i}
-            onClick={() => handlePageChange(pageNumber)}
-            className={`px-4 py-2 border rounded-md ${
-              currentPage === pageNumber
-                ? 'bg-blue-600 text-white'
-                : 'hover:bg-gray-50'
-            }`}
-          >
-            {pageNumber}
-          </button>
+          <span key={page} className="flex items-center gap-2">
+            {showEllipsis && <span className="text-gray-600 px-1">…</span>}
+            <button
+              onClick={() => goTo(page)}
+              className={`w-9 h-9 rounded text-sm font-medium transition ${
+                page === currentPage
+                  ? 'bg-[#E50914] text-white'
+                  : 'bg-[#181818] border border-[#333] text-gray-400 hover:text-white hover:border-[#E50914]'
+              }`}
+            >
+              {page}
+            </button>
+          </span>
         );
       })}
 
       <button
-        onClick={() => handlePageChange(currentPage + 1)}
+        onClick={() => goTo(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="px-4 py-2 border rounded-md hover:bg-gray-50 disabled:opacity-50"
+        className="flex items-center gap-1 px-3 py-2 bg-[#181818] border border-[#333] text-gray-400 hover:text-white hover:border-[#E50914] rounded transition disabled:opacity-30 disabled:cursor-not-allowed text-sm"
       >
-        Suivant
+        <ChevronRight className="w-4 h-4" />
       </button>
     </div>
   );

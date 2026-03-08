@@ -1,41 +1,38 @@
 'use client';
+
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { LayoutDashboard, Film, Users, BarChart2, MessageSquare } from 'lucide-react';
 
 const navigation = [
-  { name: 'Dashboard', href: '/admin/dashboard' },
-  { name: 'Films', href: '/admin/movies' },
-  { name: 'Utilisateurs', href: '/admin/users' },
-  { name: 'Statistiques', href: '/admin/stats' },
+  { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
+  { name: 'Films', href: '/admin/movies', icon: Film },
+  { name: 'Utilisateurs', href: '/admin/users', icon: Users },
+  { name: 'Avis', href: '/admin/reviews', icon: MessageSquare },
+  { name: 'Statistiques', href: '/admin/stats', icon: BarChart2 },
 ];
 
 export default function AdminHeader() {
   const pathname = usePathname();
 
   return (
-    <header className="bg-white shadow">
-      <nav className="container mx-auto px-4">
-        <div className="flex h-16 justify-between items-center">
-          <div className="flex">
-          </div>
-          
-          <div className="flex space-x-8">
-            {navigation.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={`inline-flex items-center px-1 pt-1 text-sm font-medium
-                  ${pathname === item.href 
-                    ? 'text-blue-600 border-b-2 border-blue-600' 
-                    : 'text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-              >
-                {item.name}
-              </Link>
-            ))}
-          </div>
-        </div>
-      </nav>
-    </header>
+    <div className="bg-[#0a0a0a] border-b border-[#222] px-6 py-3">
+      <div className="flex items-center gap-1 overflow-x-auto">
+        {navigation.map(({ name, href, icon: Icon }) => (
+          <Link
+            key={name}
+            href={href}
+            className={`flex items-center gap-2 px-4 py-2 rounded text-sm font-medium whitespace-nowrap transition-colors ${
+              pathname === href
+                ? 'bg-[#E50914] text-white'
+                : 'text-gray-400 hover:text-white hover:bg-[#1a1a1a]'
+            }`}
+          >
+            <Icon className="w-4 h-4" />
+            {name}
+          </Link>
+        ))}
+      </div>
+    </div>
   );
 }

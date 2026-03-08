@@ -1,112 +1,87 @@
 'use client';
+
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
-import { FilterParams } from '@/types';
-import { useRouter, useSearchParams } from 'next/dist/client/components/navigation';
+import { SlidersHorizontal, X } from 'lucide-react';
 
 interface MovieFiltersProps {
   genres: string[];
   years: number[];
-  initialFilters: FilterParams;
+  initialFilters: {
+    genre?: string;
+    year?: string;
+    rating?: string;
+    sortBy?: string;
+    sortOrder?: string;
+  };
 }
 
 export default function MovieFilters({ genres, years, initialFilters }: MovieFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [filters, setFilters] = useState<FilterParams>(initialFilters);
+  const [filters, setFilters] = useState(initialFilters);
 
-  const handleFilterChange = (key: keyof FilterParams, value: string | number | undefined) => {
-    const newFilters = { ...filters, [key]: value };
-    setFilters(newFilters);
+  const hasActiveFilters = filters.genre || filters.year || filters.rating;
 
+  const applyFilter = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
-    Object.entries(newFilters).forEach(([key, val]) => {
-      if (val) {
-        params.set(key, val.toString());
-      } else {
-        params.delete(key);
-      }
-    });
-    params.set('page', '1');
-    router.push(`/movies?${params.toString()}`);
+    if (value) params.set(key, value);
+    else params.delete(key);
+    params.delete('page');
+    router.push(`?${params.toString()}`);
+    setFilters(prev => ({ ...prev, [key]: value }));
   };
 
+  const clearFilters = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    ['genre', 'year', 'rating', 'sortBy', 'sortOrder'].forEach(k => params.delete(k));
+    params.delete('page');
+    router.push(`?${params.toString()}`);
+    setFilters({});
+  };
+
+  const selectClass = "bg-[#181818] border border-[#333] text-gray-300 text-sm rounded px-3 py-2 focus:outline-none focus:border-[#E50914] transition-colors cursor-pointer hover:border-[#555]";
+
   return (
-    <div className="bg-white p-4 rounded-lg shadow mb-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        {/* Genre */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Genre
-          </label>
-          <select
-            className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            onChange={(e) => handleFilterChange('genre', e.target.value)}
-            value={filters.genre || ''}
-          >
-            <option value="">Tous les genres</option>
-            {genres.map((genre) => (
-              <option key={genre} value={genre}>{genre}</option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Année
-          </label>
-          <select
-            className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            onChange={(e) => handleFilterChange('year', Number(e.target.value))}
-            value={filters.year || ''}
-          >
-            <option value="">Toutes les années</option>
-            {years.map((year) => (
-              <option key={year} value={year}>{year}</option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Note minimale
-          </label>
-          <select
-            className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            onChange={(e) => handleFilterChange('rating', Number(e.target.value))}
-            value={filters.rating || ''}
-          >
-            <option value="">Toutes les notes</option>
-            {[4, 3, 2, 1].map((rating) => (
-              <option key={rating} value={rating}>{rating}+ étoiles</option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Trier par
-          </label>
-          <select
-            className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            onChange={(e) => handleFilterChange('sortBy', e.target.value as FilterParams['sortBy'])}
-            value={filters.sortBy || 'releaseDate'}
-          >
-            <option value="releaseDate">Date de sortie</option>
-            <option value="title">Titre</option>
-            <option value="averageRating">Note</option>
-          </select>
-        </div>
-
-        <div className="flex items-end">
-          <button
-            onClick={() => handleFilterChange('sortOrder', filters.sortOrder === 'asc' ? 'desc' : 'asc')}
-            className="w-full px-3 py-2 border rounded-md hover:bg-gray-50 flex items-center justify-center gap-2"
-          >
-            <span>Ordre</span>
-            <span className="text-lg">{filters.sortOrder === 'asc' ? '↑' : '↓'}</span>
-          </button>
-        </div>
+    <div className="flex flex-wrap items-center gap-3">
+      <div className="flex items-center gap-2 text-gray-400">
+        <SlidersHorizontal className="w-4 h-4" />
+        <span className="text-sm font-medium">Filtres</span>
       </div>
+
+      <select value={filters.genre || ''} onChange={e => applyFilter('genre', e.target.value)} className={selectClass}>
+        <option value="">Tous les genres</option>
+        {genres.map(g => <option key={g} value={g}>{g}</option>)}
+      </select>
+
+      <select value={filters.year || ''} onChange={e => applyFilter('year', e.target.value)} className={selectClass}>
+        <option value="">Toutes les années</option>
+        {years.map(y => <option key={y} value={String(y)}>{y}</option>)}
+      </select>
+
+      <select value={filters.rating || ''} onChange={e => applyFilter('rating', e.target.value)} className={selectClass}>
+        <option value="">Toutes les notes</option>
+        {[1, 2, 3, 4].map(r => <option key={r} value={String(r)}>{r}+ ★</option>)}
+      </select>
+
+      <select value={filters.sortBy || 'releaseDate'} onChange={e => applyFilter('sortBy', e.target.value)} className={selectClass}>
+        <option value="releaseDate">Date de sortie</option>
+        <option value="averageRating">Note</option>
+        <option value="title">Titre</option>
+      </select>
+
+      <select value={filters.sortOrder || 'desc'} onChange={e => applyFilter('sortOrder', e.target.value)} className={selectClass}>
+        <option value="desc">↓ Décroissant</option>
+        <option value="asc">↑ Croissant</option>
+      </select>
+
+      {hasActiveFilters && (
+        <button onClick={clearFilters}
+          className="flex items-center gap-1 text-xs text-[#E50914] hover:text-red-400 transition-colors border border-[#E50914]/30 hover:border-[#E50914] px-3 py-2 rounded">
+          <X className="w-3 h-3" />
+          Effacer
+        </button>
+      )}
     </div>
   );
 }

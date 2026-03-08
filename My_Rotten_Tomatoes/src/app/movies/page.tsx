@@ -44,33 +44,46 @@ export default async function MoviesPage({
   ]);
 
   return (
-    <main className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Films</h1>
-
-      <Suspense fallback={<LoadingMovies />}>
-        <SearchBar directors={directors} initialDirector={params.director} />
-
+    <main className="min-h-screen bg-[#141414] pt-24 pb-16">
+      <div className="container mx-auto px-6">
+        {/* Title */}
         <div className="mb-8">
-          <MovieFilters
-            genres={genres}
-            years={years}
-            initialFilters={{
-              genre: params.genre,
-              year: params.year,
-              rating: params.rating,
-              sortBy: params.sortBy,
-              sortOrder: params.sortOrder,
-            }}
-          />
+          <h1 className="text-3xl font-bold text-white mb-1">Catalogue</h1>
+          <p className="text-gray-400 text-sm">{pagination.total} films disponibles</p>
         </div>
 
-        <MovieGrid movies={movies} />
+        <Suspense fallback={<LoadingMovies />}>
+          <SearchBar directors={directors} initialDirector={params.director} />
 
-        <Pagination
-          currentPage={pagination.page}
-          totalPages={pagination.totalPages}
-        />
-      </Suspense>
+          <div className="mb-8 mt-4">
+            <MovieFilters
+              genres={genres}
+              years={years}
+              initialFilters={{
+                genre: params.genre,
+                year: params.year,
+                rating: params.rating,
+                sortBy: params.sortBy,
+                sortOrder: params.sortOrder,
+              }}
+            />
+          </div>
+
+          {movies.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-24 text-center">
+              <p className="text-4xl mb-4">🎬</p>
+              <p className="text-white text-xl font-semibold mb-2">Aucun film trouvé</p>
+              <p className="text-gray-400 text-sm">Essayez de modifier vos filtres</p>
+            </div>
+          ) : (
+            <MovieGrid movies={movies} />
+          )}
+
+          <div className="mt-10">
+            <Pagination currentPage={pagination.page} totalPages={pagination.totalPages} />
+          </div>
+        </Suspense>
+      </div>
     </main>
   );
 }

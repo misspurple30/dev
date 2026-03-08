@@ -3,14 +3,147 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --netflix-black: #141414;
+  --netflix-red: #E50914;
+  --netflix-red-hover: #B20710;
+  --netflix-gray: #808080;
+  --netflix-dark-gray: #181818;
+  --netflix-border: #333333;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #141414;
+  color: #ffffff;
+  font-family: 'Netflix Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+/* Scrollbar custom */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #141414;
+}
+::-webkit-scrollbar-thumb {
+  background: #E50914;
+  border-radius: 3px;
+}
+
+/* Card hover effect */
+.movie-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.movie-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 40px rgba(229, 9, 20, 0.3);
+  z-index: 10;
+}
+
+/* Image overlay */
 .image-container {
-  @apply relative overflow-hidden;
+  position: relative;
+  overflow: hidden;
 }
-
 .image-container img {
-  @apply transition-transform duration-300;
+  transition: transform 0.3s ease;
+}
+.image-container:hover img {
+  transform: scale(1.08);
 }
 
-.image-container:hover img {
-  @apply scale-105;
+/* Netflix button */
+.btn-netflix {
+  background-color: #E50914;
+  color: white;
+  padding: 0.6rem 1.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+.btn-netflix:hover {
+  background-color: #B20710;
+}
+
+/* Input style */
+.input-netflix {
+  background-color: #333333;
+  border: 1px solid #555555;
+  color: white;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.input-netflix:focus {
+  border-color: #E50914;
+}
+.input-netflix::placeholder {
+  color: #808080;
+}
+
+/* Badge genre */
+.genre-badge {
+  background-color: #333333;
+  color: #cccccc;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Rating stars */
+.star-active {
+  color: #E50914;
+}
+.star-inactive {
+  color: #555555;
+}
+
+/* Hero gradient */
+.hero-gradient {
+  background: linear-gradient(
+    to right,
+    rgba(20, 20, 20, 0.95) 40%,
+    rgba(20, 20, 20, 0.4) 70%,
+    transparent 100%
+  );
+}
+
+.hero-gradient-bottom {
+  background: linear-gradient(
+    to top,
+    rgba(20, 20, 20, 1) 0%,
+    rgba(20, 20, 20, 0.5) 50%,
+    transparent 100%
+  );
+}
+
+/* Section title */
+.section-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 1rem;
+  border-left: 4px solid #E50914;
+  padding-left: 0.75rem;
+}
+
+/* Skeleton loading */
+.skeleton {
+  background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
