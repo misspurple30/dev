@@ -1,0 +1,16 @@
+@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.image-container {
+  @apply relative overflow-hidden;
+}
+
+.image-container img {
+  @apply transition-transform duration-300;
+}
+
+.image-container:hover img {
+  @apply scale-105;
+}

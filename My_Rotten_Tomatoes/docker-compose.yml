@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGODB_URI=mongodb+srv://preciseclownfishtsff:CbhjygtBjIYRQLd4@myroten.woolq.mongodb.net/?retryWrites=true&w=majority&appName=myroten
+      - NEXTAUTH_URL=http://localhost:3000
+      - NEXTAUTH_SECRET=dsfsdfsfsjmsdmff465s1sd4f11fds1
+      - TMDB_API_KEY=45ff8a5c1d0b44b4376539d27c163206
+    depends_on:
+      - mongodb
+    restart: always
+    networks:
+      - app-network
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
