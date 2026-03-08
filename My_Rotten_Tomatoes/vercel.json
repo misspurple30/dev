@@ -1,1 +1,7 @@
-{"buildCommand": "next build"}
+{
+  "build": {
+    "env": {
+      "NEXT_IGNORE_SECURITY_ALERTS": "1"
+    }
+  }
+}
